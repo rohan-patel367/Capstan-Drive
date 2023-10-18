@@ -52,7 +52,7 @@ void setup() {
   motor.velocity_index_search = 3;
 
   // set motion control loop to be used
-  motor.controller = MotionControlType::velocity;
+  motor.controller = MotionControlType::angle;
 
   // contoller configuration 
   // default parameters in defaults.h
@@ -72,7 +72,9 @@ void setup() {
   // angle P controller
   motor.P_angle.P = 20;
   //  maximal velocity of the position control
-  motor.velocity_limit = 4;
+  motor.velocity_limit = 80;
+;
+  motor.current_limit = 2;
 
 
   // use monitoring with serial 
@@ -98,12 +100,12 @@ void loop() {
 
   // Motion control function
   motor.move();
-  sensor.update();
-  Serial.println(sensor.getAngle());
+  //sensor.update();
+  //Serial.println(sensor.getAngle());
   // function intended to be used with serial plotter to monitor motor variables
   // significantly slowing the execution down!!!!
   // motor.monitor();
-  
+  motor.loopFOC();
   // user communication
   command.run();
 }
