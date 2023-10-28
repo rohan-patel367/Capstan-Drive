@@ -22,6 +22,9 @@ float starting_pos, current_pos, output;
 float Kp = 0.25, Ki = 0, Kd = 0;
 float Kp2 = 0.05, Ki2 = 0, Kd2 = 0;
 
+long loop_count = 0;
+long loop_time = 0;
+long loop_rate = 0;
 // Specify PID links
 QuickPID myPID(&current_pos, &output, &starting_pos);
 
@@ -109,7 +112,13 @@ void setup()
 void loop()
 {
   // main FOC algorithm function
-
+  
+  if (millis () - loop_time > 1000){
+    loop_rate = loop_count;
+    loop_count = 0;
+    loop_time = millis();
+    Serial.println(loop_rate);
+  }
   // Motion control function
   motor.move();
   // sensor.update();
@@ -134,12 +143,12 @@ void loop()
   }
   if (sensor.getAngle() - starting_pos > 0)
   {
-    Serial.println(-output);
+    //Serial.println(-output);
     motor.target = -output;
   }
   else
   {
-    Serial.println(output);
+    //Serial.println(output);
     motor.target = output;
   }
   // motor.target = -(sensor.getAngle() - starting_pos) * 0.3;
@@ -149,4 +158,5 @@ void loop()
   motor.loopFOC();
   // user communication
   command.run();
+  loop_count++;
 }
